@@ -2,6 +2,7 @@
 using MigraDocCore.DocumentObjectModel.MigraDoc.DocumentObjectModel.Shapes;
 using MigraDocCore.DocumentObjectModel.Tables;
 using System;
+using static MigraDocCore.DocumentObjectModel.MigraDoc.DocumentObjectModel.Shapes.ImageSource;
 
 namespace PdfToolkit.Services
 {
@@ -44,21 +45,29 @@ namespace PdfToolkit.Services
             CurrentSection = Document.AddSection();
         }
 
-        public void AddImage(ImageSource.IImageSource imageSource, Unit? width = null)
+        public void AddImage(byte[] bytes, Unit? width = null)
         {
-            var image = CurrentSection.AddImage(imageSource);
-            if (width != null) image.Width = width.Value;
-        }
+            if (bytes == null || bytes.Length == 0)
+                throw new ArgumentException("Image bytes cannot be null or empty.", nameof(bytes));
 
-        public Table AddTable(params Unit[] columnWidths)
-        {
-            var table = CurrentSection.AddTable();
-            foreach (var w in columnWidths)
-            {
-                var col = table.AddColumn(w);
-                col.Format.Alignment = ParagraphAlignment.Left;
-            }
-            return table;
+            var imageSource = new ByteArrayImageSource(bytes);
+            var image = CurrentSection.AddImage(imageSource);
+
+            if (width.HasValue)
+                image.Width = width.Value;
         }
+        //public Table AddTable(params Unit[] columnWidths)
+        //{
+        //    var table = CurrentSection.AddTable();
+        //    foreach (var w in columnWidths)
+        //    {
+        //        var col = table.AddColumn(w);
+        //        col.Format.Alignment = ParagraphAlignment.Left;
+        //    }
+        //    return table;
+        //}
+
+        public TableBuilder AddTable(params double[] columnWidthsCm)
+            => new TableBuilder(CurrentSection.Document, CurrentSection, columnWidthsCm);
     }
 }
