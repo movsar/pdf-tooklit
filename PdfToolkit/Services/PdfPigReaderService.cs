@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using PdfToolkit.Interfaces;
+using System.Text;
 using UglyToad.PdfPig;
 
 namespace PdfToolkit.Services

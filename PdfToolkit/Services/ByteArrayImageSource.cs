@@ -16,7 +16,12 @@ namespace PdfToolkit.Services
         public ByteArrayImageSource(byte[] bytes)
         {
             _bytes = bytes ?? throw new ArgumentNullException(nameof(bytes));
-            _bitmap = new Lazy<Bitmap>(() => new Bitmap(new MemoryStream(_bytes)));
+            _bitmap = new Lazy<Bitmap>(() =>
+            {
+                using var ms = new MemoryStream(_bytes);
+                var bmp = new Bitmap(ms);
+                return new Bitmap(bmp); // copy, so original stream can be disposed
+            });
         }
 
         /// <summary>

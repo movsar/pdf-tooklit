@@ -1,5 +1,6 @@
 ﻿using MigraDocCore.DocumentObjectModel;
 using MigraDocCore.Rendering;
+using PdfToolkit.Interfaces;
 
 namespace PdfToolkit.Services
 {
@@ -28,7 +29,9 @@ namespace PdfToolkit.Services
             var dir = System.IO.Path.GetDirectoryName(filePath);
             if (!string.IsNullOrEmpty(dir) && !System.IO.Directory.Exists(dir))
                 System.IO.Directory.CreateDirectory(dir);
-
+          
+            if (File.Exists(filePath))
+                File.Delete(filePath);
             renderer.PdfDocument.Save(filePath);
         }
     }

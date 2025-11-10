@@ -1,4 +1,4 @@
-﻿namespace PdfToolkit.Services
+﻿namespace PdfToolkit.Interfaces
 {
     public interface IPdfReaderService
     {
