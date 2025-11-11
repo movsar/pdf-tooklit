@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfToolkit", "PdfToolkit\Pd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfTookit.Tests", "PdfTookit.Tests\PdfTookit.Tests.csproj", "{E844223E-5E15-49A0-8F79-C676100692F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomTranscript.App", "CustomTranscript\CustomTranscript.App.csproj", "{C90E0757-7612-0F9C-5346-9D0398315A6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{E844223E-5E15-49A0-8F79-C676100692F2}.Release|x64.Build.0 = Release|Any CPU
 		{E844223E-5E15-49A0-8F79-C676100692F2}.Release|x86.ActiveCfg = Release|Any CPU
 		{E844223E-5E15-49A0-8F79-C676100692F2}.Release|x86.Build.0 = Release|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Debug|x64.Build.0 = Debug|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Debug|x86.Build.0 = Debug|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Release|x64.ActiveCfg = Release|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Release|x64.Build.0 = Release|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Release|x86.ActiveCfg = Release|Any CPU
+		{C90E0757-7612-0F9C-5346-9D0398315A6E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

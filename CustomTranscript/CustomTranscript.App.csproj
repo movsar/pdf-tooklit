@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<namespace>Custom_Transcript</namespace>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Images\aia-logo.png" />
+		<None Remove="Images\cpd-logo.png" />
+		<None Remove="Images\hdr-logo.png" />
+		<None Remove="Images\iacet-logo.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Images\aia-logo.png" />
+		<EmbeddedResource Include="Images\cpd-logo.png" />
+		<EmbeddedResource Include="Images\hdr-logo.png" />
+		<EmbeddedResource Include="Images\iacet-logo.png" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="itext7" Version="9.3.0" />
+		<PackageReference Include="itext7.bouncy-castle-adapter" Version="9.3.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
+		<PackageReference Include="Azure.Storage.Queues" Version="12.24.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+		<PackageReference Include="NodaTime" Version="3.2.2" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Cornerstone Api Services\CsodApiService\Cornerstone Api Services.csproj" />
+	  <ProjectReference Include="..\..\pdf-tooklit\PdfToolkit\PdfToolkit.csproj" />
+	  <ProjectReference Include="..\Snowflake Api Services\Snowflake Api Services.csproj" />
+	</ItemGroup>
+
+</Project>
