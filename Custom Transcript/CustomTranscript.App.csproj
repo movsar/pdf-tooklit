@@ -33,9 +33,8 @@
 
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Cornerstone Api Services\CsodApiService\Cornerstone Api Services.csproj" />
 	  <ProjectReference Include="..\..\pdf-tooklit\PdfToolkit\PdfToolkit.csproj" />
-	  <ProjectReference Include="..\Snowflake Api Services\Snowflake Api Services.csproj" />
+	  <ProjectReference Include="..\Cornerstone Api Services\CsodApiService\Cornerstone Api Services.csproj" />
 	</ItemGroup>
 
 </Project>

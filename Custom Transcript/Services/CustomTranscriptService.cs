@@ -8,21 +8,18 @@ namespace CustomTranscript.App.Services
     {
 
         private readonly ApiReportingService _apiReportingService;
-        private readonly SnowflakeReportingService _snowflakeReportingService;
         private readonly PdfGenerationService _pdfService;
 
         public CustomTranscriptService(ApiReportingService apiBasedReportingService,
-            SnowflakeReportingService snowflakeBasedReportingService,
             PdfGenerationService pdfService)
         {
             _apiReportingService = apiBasedReportingService;
-            _snowflakeReportingService = snowflakeBasedReportingService;
             _pdfService = pdfService;
         }
 
         public async Task<byte[]> CreatePdfReport(Employee employee, DateTime dateFrom, DateTime dateTo)
         {
-            List<ReportRow> reportData = await _snowflakeReportingService.GetReportDataAsync((int)employee.Id!, employee.ExternalId!, dateFrom, dateTo);
+            List<ReportRow> reportData = await _apiReportingService.GetReportDataAsync((int)employee.Id!, employee.ExternalId!, dateFrom, dateTo);
 
             try
             {

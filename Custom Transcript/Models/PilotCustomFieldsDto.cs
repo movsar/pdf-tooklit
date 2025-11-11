@@ -1,5 +1,4 @@
 ﻿using CornerstoneApiServices.Models;
-using CornerstoneApiServices.Models.Learning;
 using CustomTranscript.App.Helpers;
 
 namespace CustomTranscript.App.Models
