@@ -25,7 +25,7 @@ namespace CustomTranscript.Tests
                 reportRows.Add(new ReportRow
                 {
                     DateCompleted = DateTime.Today.AddDays(-i),
-                    CourseName = $"Course {i}",
+                    CourseName = $"Course Course Course Course Course Course Course Course Course Course Course {i}",
                     ProviderName = $"Provider {i}",
                     Author = $"Author {i}",
                     DeliveryType = "Online",

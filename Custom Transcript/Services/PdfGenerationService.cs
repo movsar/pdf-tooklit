@@ -1,4 +1,5 @@
 ﻿using CustomTranscript.App.Models;
+using MigraDocCore.DocumentObjectModel;
 using PdfToolkit.Interfaces;
 using PdfToolkit.Services;
 using System.Reflection;
@@ -20,6 +21,7 @@ public sealed class PdfGenerationService
 
         _pdfService.CreatePdf(tempPath, builder =>
         {
+            SetFooter(builder, employeeTimeZone);
             AddLogos(builder);
             AddMainText(builder, userName, dateFrom, dateTo);
             AddTable(builder, reportRows);
@@ -37,12 +39,12 @@ public sealed class PdfGenerationService
 
     private void AddMainText(PdfBuilder builder, string userName, DateTime dateFrom, DateTime dateTo)
     {
-        builder.AddCenteredParagraph("HDRU Professional Training History", 16, bold: true);
-        builder.AddSpacer(0.08);
-        builder.AddParagraphSized($"Professional Training History for: {userName}", 11, bold: true);
-        builder.AddSpacer(0.05);
-        builder.AddParagraphSized($"Certificate of completion for {dateFrom:d} - {dateTo:d}", 11, bold: false); 
-        builder.AddSpacer(0.02);
+        var historyParagraph = builder.AddCenteredParagraph("HDRU Professional Training History", 16, bold: true);
+        historyParagraph.Format.SpaceAfter = Unit.FromCentimeter(0.3);
+        var trainingHistoryParagraph = builder.AddParagraphSized($"Professional Training History for: {userName}", 11, bold: true);
+        trainingHistoryParagraph.Format.SpaceAfter = Unit.FromCentimeter(0.2);
+        var certificateParagraph = builder.AddParagraphSized($"Certificate of completion for {dateFrom:d} - {dateTo:d}", 11, bold: false);
+        certificateParagraph.Format.SpaceAfter = Unit.FromCentimeter(0.1);
     }
 
     private void AddLogos(PdfBuilder builder)
@@ -65,7 +67,7 @@ public sealed class PdfGenerationService
 
     private void AddTable(PdfBuilder builder, List<ReportRow> rows)
     {
-        var table = builder.AddTable(6, 3, 2.5, 2.5, 2.5, 1.8, 1.8, 1.8, 1.8, 1.8);
+        var table = builder.AddTable(6, 3, 3, 3, 3.5, 1.8, 1.8, 1.8, 1.8, 1.8);
 
         table.AddHeader(
             "Course Name", "Date Completed", "Provider Name",
@@ -80,22 +82,34 @@ public sealed class PdfGenerationService
                 r.ProviderName,
                 r.DeliveryType,
                 r.Author,
-                r.CEUs.ToString("0.##"),
-                r.CPDs.ToString("0.#"),
-                r.HSWs.ToString("0.#"),
-                r.LUs.ToString("0.#"),
-                r.PDHs.ToString("0.#"));
+                r.CEUs.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture),
+                r.CPDs.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture),
+                r.HSWs.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture),
+                r.LUs.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture),
+                r.PDHs.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture));
         }
 
         table.AddMergedRow(
             5,
             "Total Credit Hours for this report:",
-            rows.Sum(r => r.CEUs).ToString("0.0"),
-            rows.Sum(r => r.CPDs).ToString("0.00"),
-            rows.Sum(r => r.HSWs).ToString("0.00"),
-            rows.Sum(r => r.LUs).ToString("0.00"),
-            rows.Sum(r => r.PDHs).ToString("0.00")
+            rows.Sum(r => r.CEUs).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
+            rows.Sum(r => r.CPDs).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+            rows.Sum(r => r.HSWs).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+            rows.Sum(r => r.LUs).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+            rows.Sum(r => r.PDHs).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
         );
+    }
+
+    private void SetFooter(PdfBuilder builder, string? employeeTimeZone)
+    {
+        var culture = new System.Globalization.CultureInfo("en-US");
+        var now = DateTime.Now;
+        var month = now.ToString("MMMM", culture);
+        var day = now.Day;
+        var time = now.ToString("h:mm tt", culture);
+        var footerText = $"{month} {day}, {time}, Eastern Time (US & Canada)";
+
+        builder.SetFooter(footerText);
     }
 
     private static byte[] GetImageResourceAsBytes(string resourceName)

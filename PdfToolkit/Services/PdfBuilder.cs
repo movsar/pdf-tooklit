@@ -66,21 +66,12 @@ namespace PdfToolkit.Services
         {
             return CurrentSection.AddParagraph(text, style ?? "Normal");
         }
-
-        public void AddSpacer(double cm)
-        {
-            var p = CurrentSection.AddParagraph();
-            p.Format.SpaceBefore = Unit.FromCentimeter(cm);
-        }
-
       
         public void AddFooter(string text)
         {
             var p = CurrentSection.AddParagraph(text);
-            p.Format.Alignment = ParagraphAlignment.Center;
+            p.Format.Alignment = ParagraphAlignment.Left;
             p.Format.Font.Size = 8;
-            p.Format.Font.Color = Colors.DarkGray;
-            p.Format.SpaceBefore = Unit.FromCentimeter(0.5);
         }
 
         public Paragraph AddCenteredParagraph(string text, double? fontSize = null, bool bold = false)
@@ -98,6 +89,15 @@ namespace PdfToolkit.Services
             p.Format.Font.Size = size;
             p.Format.Font.Bold = bold;
             return p;
+        }
+
+        public void SetFooter(string text)
+        {
+            var footer = CurrentSection.Footers.Primary;
+
+            var paragraph = footer.AddParagraph(text);
+            paragraph.Format.Alignment = ParagraphAlignment.Left;
+            paragraph.Format.Font.Size = 8;
         }
 
         public void AddImage(byte[] bytes, Unit? width = null)

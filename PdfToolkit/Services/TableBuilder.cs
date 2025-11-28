@@ -27,7 +27,7 @@ namespace PdfToolkit.Services
             var row = _table.AddRow();
             row.HeadingFormat = true;
             row.Format.Font.Bold = true;
-            row.Format.Font.Size = 9;
+            row.Format.Font.Size = 12;
             row.Shading.Color = Colors.White;
             row.VerticalAlignment = VerticalAlignment.Center;
 
@@ -36,7 +36,7 @@ namespace PdfToolkit.Services
                 var cell = row.Cells[i];
                 var paragraph = cell.AddParagraph(headers[i]);
                 paragraph.Format.Font.Bold = true;
-                paragraph.Format.Font.Size = 8;
+                paragraph.Format.Font.Size = 10;
                 cell.VerticalAlignment = VerticalAlignment.Center;
                 cell.Format.Alignment = ParagraphAlignment.Left;
 
@@ -82,6 +82,7 @@ namespace PdfToolkit.Services
             {
                 row.Cells[span + i].AddParagraph(remainingValues[i]);
                 row.Cells[span + i].Format.Alignment = ParagraphAlignment.Left;
+                row.Format.Font.Bold = true;
             }
 
             return this;
