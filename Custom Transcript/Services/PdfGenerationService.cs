@@ -37,9 +37,12 @@ public sealed class PdfGenerationService
 
     private void AddMainText(PdfBuilder builder, string userName, DateTime dateFrom, DateTime dateTo)
     {
-        builder.AddHeading("HDRU Professional Training History");
-        builder.AddParagraph($"Professional Training History for: {userName}");
-        builder.AddParagraph($"Certificate of completion for {dateFrom:d} - {dateTo:d}");
+        builder.AddCenteredParagraph("HDRU Professional Training History", 16, bold: true);
+        builder.AddSpacer(0.08);
+        builder.AddParagraphSized($"Professional Training History for: {userName}", 11, bold: true);
+        builder.AddSpacer(0.05);
+        builder.AddParagraphSized($"Certificate of completion for {dateFrom:d} - {dateTo:d}", 11, bold: false); 
+        builder.AddSpacer(0.02);
     }
 
     private void AddLogos(PdfBuilder builder)
@@ -62,7 +65,7 @@ public sealed class PdfGenerationService
 
     private void AddTable(PdfBuilder builder, List<ReportRow> rows)
     {
-        var table = builder.AddTable(5, 2, 2, 2, 2, 1, 1, 1, 1, 1);
+        var table = builder.AddTable(6, 3, 2.5, 2.5, 2.5, 1.8, 1.8, 1.8, 1.8, 1.8);
 
         table.AddHeader(
             "Course Name", "Date Completed", "Provider Name",
@@ -84,19 +87,15 @@ public sealed class PdfGenerationService
                 r.PDHs.ToString("0.#"));
         }
 
-        table.AddMergedRow(5, "Total Credit Hours for this report:");
-
-        table.AddRow(
-            "",
-            "",
-            "",
-            "",
-            "",
-            rows.Sum(r => r.CEUs).ToString("0.##"),
-            rows.Sum(r => r.CPDs).ToString("0.#"),
-            rows.Sum(r => r.HSWs).ToString("0.#"),
-            rows.Sum(r => r.LUs).ToString("0.#"),
-            rows.Sum(r => r.PDHs).ToString("0.#"));
+        table.AddMergedRow(
+            5,
+            "Total Credit Hours for this report:",
+            rows.Sum(r => r.CEUs).ToString("0.0"),
+            rows.Sum(r => r.CPDs).ToString("0.00"),
+            rows.Sum(r => r.HSWs).ToString("0.00"),
+            rows.Sum(r => r.LUs).ToString("0.00"),
+            rows.Sum(r => r.PDHs).ToString("0.00")
+        );
     }
 
     private static byte[] GetImageResourceAsBytes(string resourceName)

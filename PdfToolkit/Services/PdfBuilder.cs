@@ -2,11 +2,11 @@
 using MigraDocCore.DocumentObjectModel.MigraDoc.DocumentObjectModel.Shapes;
 using MigraDocCore.DocumentObjectModel.Tables;
 using System;
+using System.IO;
 using static MigraDocCore.DocumentObjectModel.MigraDoc.DocumentObjectModel.Shapes.ImageSource;
 
 namespace PdfToolkit.Services
 {
-    // Small facade to keep using code readable and decoupled from MigraDoc types.
     public sealed class PdfBuilder
     {
         internal Document Document { get; }
@@ -17,21 +17,49 @@ namespace PdfToolkit.Services
             Document = new Document();
             DefineDefaultStyles(Document);
             CurrentSection = Document.AddSection();
+            CurrentSection.PageSetup.PageFormat = PageFormat.Letter;
+            CurrentSection.PageSetup.LeftMargin = Unit.FromCentimeter(1);
+            CurrentSection.PageSetup.PageWidth = Unit.FromInch(12);
+            CurrentSection.PageSetup.PageHeight = Unit.FromInch(9);
+
         }
 
         void DefineDefaultStyles(Document doc)
         {
             var normal = doc.Styles["Normal"];
             normal.Font.Name = "Segoe UI";
-            normal.Font.Size = 11;
-            doc.Styles.AddStyle("Heading1", "Normal").Font.Size = 18;
-            doc.Styles["Heading1"].ParagraphFormat.SpaceAfter = "0.25cm";
+            normal.Font.Size = 12;
+
+            var title = doc.Styles.AddStyle("Title", "Normal");
+            title.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+            title.Font.Size = 18;
+            title.Font.Bold = true;
+            title.ParagraphFormat.SpaceAfter = Unit.FromCentimeter(0.15);
+
+            var subtitle = doc.Styles.AddStyle("Subtitle", "Normal");
+            subtitle.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+            subtitle.Font.Size = 12;
+            subtitle.Font.Bold = false;
+            subtitle.ParagraphFormat.SpaceAfter = Unit.FromCentimeter(0.1);
+
+            var smallRight = doc.Styles.AddStyle("SmallRight", "Normal");
+            smallRight.ParagraphFormat.Alignment = ParagraphAlignment.Right;
+            smallRight.Font.Size = 9;
+            smallRight.Font.Color = Colors.DarkGray;
+
+            var th = doc.Styles.AddStyle("TableHeader", "Normal");
+            th.Font.Size = 10;
+            th.Font.Bold = true;
+            th.ParagraphFormat.Alignment = ParagraphAlignment.Left;
+            th.ParagraphFormat.SpaceBefore = Unit.FromPoint(2);
+            th.ParagraphFormat.SpaceAfter = Unit.FromPoint(2);
         }
 
+        // Existing methods
         public void AddHeading(string text)
         {
-            var p = CurrentSection.AddParagraph(text, "Heading1");
-            p.Format.SpaceBefore = "0.2cm";
+            var p = CurrentSection.AddParagraph(text, "Title");
+            p.Format.SpaceBefore = Unit.FromCentimeter(0.2);
         }
 
         public Paragraph AddParagraph(string text, string? style = null)
@@ -39,10 +67,37 @@ namespace PdfToolkit.Services
             return CurrentSection.AddParagraph(text, style ?? "Normal");
         }
 
-        public void AddPageBreak()
+        public void AddSpacer(double cm)
         {
-            CurrentSection.AddPageBreak();
-            CurrentSection = Document.AddSection();
+            var p = CurrentSection.AddParagraph();
+            p.Format.SpaceBefore = Unit.FromCentimeter(cm);
+        }
+
+      
+        public void AddFooter(string text)
+        {
+            var p = CurrentSection.AddParagraph(text);
+            p.Format.Alignment = ParagraphAlignment.Center;
+            p.Format.Font.Size = 8;
+            p.Format.Font.Color = Colors.DarkGray;
+            p.Format.SpaceBefore = Unit.FromCentimeter(0.5);
+        }
+
+        public Paragraph AddCenteredParagraph(string text, double? fontSize = null, bool bold = false)
+        {
+            var p = CurrentSection.AddParagraph(text);
+            p.Format.Alignment = ParagraphAlignment.Center;
+            if (fontSize.HasValue) p.Format.Font.Size = fontSize.Value;
+            p.Format.Font.Bold = bold;
+            return p;
+        }
+
+        public Paragraph AddParagraphSized(string text, double size, bool bold = false, string? style = null)
+        {
+            var p = CurrentSection.AddParagraph(text, style ?? "Normal");
+            p.Format.Font.Size = size;
+            p.Format.Font.Bold = bold;
+            return p;
         }
 
         public void AddImage(byte[] bytes, Unit? width = null)
