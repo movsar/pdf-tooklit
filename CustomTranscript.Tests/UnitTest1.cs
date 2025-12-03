@@ -10,7 +10,7 @@ namespace CustomTranscript.Tests
         public void CreatePdfReport_ShouldGeneratePdfFile()
         {
             // Arrange
-            var service = new MigraDocPdfDocumentService();
+            var service = new PdfDocumentService();
             var pdfService = new PdfGenerationService(service);
 
             string userName = "John Doe";

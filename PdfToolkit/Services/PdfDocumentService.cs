@@ -4,7 +4,7 @@ using PdfToolkit.Interfaces;
 
 namespace PdfToolkit.Services
 {
-    public sealed class MigraDocPdfDocumentService : IPdfDocumentService
+    public sealed class PdfDocumentService : IPdfDocumentService
     {
         public void CreatePdf(string filePath, Action<PdfBuilder> build)
         {
