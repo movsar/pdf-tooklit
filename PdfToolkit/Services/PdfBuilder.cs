@@ -1,16 +1,11 @@
 ﻿using MigraDocCore.DocumentObjectModel;
-using MigraDocCore.DocumentObjectModel.MigraDoc.DocumentObjectModel.Shapes;
-using MigraDocCore.DocumentObjectModel.Tables;
-using System;
-using System.IO;
-using static MigraDocCore.DocumentObjectModel.MigraDoc.DocumentObjectModel.Shapes.ImageSource;
 
 namespace PdfToolkit.Services
 {
     public sealed class PdfBuilder
     {
         internal Document Document { get; }
-        internal Section CurrentSection { get; private set; }
+        public Section CurrentSection { get; private set; }
 
         public PdfBuilder()
         {
@@ -66,13 +61,6 @@ namespace PdfToolkit.Services
         {
             return CurrentSection.AddParagraph(text, style ?? "Normal");
         }
-      
-        public void AddFooter(string text)
-        {
-            var p = CurrentSection.AddParagraph(text);
-            p.Format.Alignment = ParagraphAlignment.Left;
-            p.Format.Font.Size = 8;
-        }
 
         public Paragraph AddCenteredParagraph(string text, double? fontSize = null, bool bold = false)
         {
@@ -100,26 +88,16 @@ namespace PdfToolkit.Services
             paragraph.Format.Font.Size = 8;
         }
 
-        public void AddImage(byte[] bytes, Unit? width = null)
-        {
-            if (bytes == null || bytes.Length == 0)
-                throw new ArgumentException("Image bytes cannot be null or empty.", nameof(bytes));
-
-            var imageSource = new ByteArrayImageSource(bytes);
-            var image = CurrentSection.AddImage(imageSource);
-
-            if (width.HasValue)
-                image.Width = width.Value;
-        }
-        //public Table AddTable(params Unit[] columnWidths)
+        //public void AddImage(byte[] bytes, Unit? width = null)
         //{
-        //    var table = CurrentSection.AddTable();
-        //    foreach (var w in columnWidths)
-        //    {
-        //        var col = table.AddColumn(w);
-        //        col.Format.Alignment = ParagraphAlignment.Left;
-        //    }
-        //    return table;
+        //    if (bytes == null || bytes.Length == 0)
+        //        throw new ArgumentException("Image bytes cannot be null or empty.", nameof(bytes));
+
+        //    var imageSource = new ByteArrayImageSource(bytes);
+        //    var image = CurrentSection.AddImage(imageSource);
+
+        //    if (width.HasValue)
+        //        image.Width = width.Value;
         //}
 
         public TableBuilder AddTable(params double[] columnWidthsCm)

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
 using static MigraDocCore.DocumentObjectModel.MigraDoc.DocumentObjectModel.Shapes.ImageSource;
 
 namespace PdfToolkit.Services
@@ -20,56 +16,29 @@ namespace PdfToolkit.Services
             {
                 using var ms = new MemoryStream(_bytes);
                 var bmp = new Bitmap(ms);
-                return new Bitmap(bmp); // copy, so original stream can be disposed
+                return new Bitmap(bmp);
             });
         }
 
-        /// <summary>
-        /// Returns a MemoryStream of the image bytes.
-        /// </summary>
-        public Stream GetStream()
-        {
-            return new MemoryStream(_bytes);
-        }
-
-        /// <summary>
-        /// Name of the image source.
-        /// </summary>
-        public string Name => "ByteArrayImage";
-
-        /// <summary>
-        /// Width in pixels.
-        /// </summary>
+        public string Name { get; }
         public int Width => _bitmap.Value.Width;
-
-        /// <summary>
-        /// Height in pixels.
-        /// </summary>
         public int Height => _bitmap.Value.Height;
 
-        /// <summary>
-        /// Whether the image has transparency.
-        /// </summary>
         public bool Transparent => ImageIsTransparent();
-
         private bool ImageIsTransparent()
-        {
+            {
             var bmp = _bitmap.Value;
-            return bmp.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb
-                   || bmp.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppPArgb;
+            return bmp.PixelFormat == PixelFormat.Format64bppArgb
+                   || bmp.PixelFormat == PixelFormat.Format64bppArgb;
         }
-
-        /// <summary>
-        /// Not used by MigraDocCore; provided for interface compatibility.
-        /// </summary>
         public void SaveAsJpeg(MemoryStream ms)
         {
-            _bitmap.Value.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            _bitmap.Value.Save(ms, ImageFormat.Jpeg);
         }
 
         public void SaveAsPdfBitmap(MemoryStream ms)
         {
-            _bitmap.Value.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            _bitmap.Value.Save(ms, ImageFormat.Png);
         }
     }
 }

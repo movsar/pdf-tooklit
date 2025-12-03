@@ -87,7 +87,5 @@ namespace PdfToolkit.Services
 
             return this;
         }
-
-        internal Table Build() => _table;
     }
 }

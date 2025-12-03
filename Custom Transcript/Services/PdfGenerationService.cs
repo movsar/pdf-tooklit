@@ -1,5 +1,6 @@
 ﻿using CustomTranscript.App.Models;
 using MigraDocCore.DocumentObjectModel;
+using MigraDocCore.DocumentObjectModel.Tables;
 using PdfToolkit.Interfaces;
 using PdfToolkit.Services;
 using System.Reflection;
@@ -7,7 +8,6 @@ using System.Reflection;
 public sealed class PdfGenerationService
 {
     private const string NO_DATA = "N/A";
-
     private readonly IPdfDocumentService _pdfService;
 
     public PdfGenerationService(IPdfDocumentService pdfService)
@@ -49,20 +49,63 @@ public sealed class PdfGenerationService
 
     private void AddLogos(PdfBuilder builder)
     {
-        var logos = new List<(string name, string text, double width)>
-            {
-                ("hdr-logo.png", "HDR, Inc.\r\n1917 S. 67th Street\r\nOmaha, NE 68106\r\n(402) 399-1000\r\nHDRUniversityRegistrar@hdrinc.com\r\n", 2.5),
-                ("aia-logo.png", "AIA Provider: C093", 1.5),
-                ("cpd-logo.png", "CPD Number: 15890", 2.0),
-                ("iacet-logo.png", "IACET Provider: 1001157-3", 2.5)
-            };
+        var logoTable = builder.CurrentSection.AddTable();
+        logoTable.Borders.Visible = false;
 
-        foreach (var (name, text, width) in logos)
+        logoTable.AddColumn(Unit.FromCentimeter(10.5));
+        logoTable.AddColumn(Unit.FromCentimeter(10.0));
+
+        var row = logoTable.AddRow();
+        row.VerticalAlignment = VerticalAlignment.Top;
+
+        var leftCell = row.Cells[0];
+        var hdrBytes = GetImageResourceAsBytes("hdr-logo.png");
+        var hdrImg = leftCell.AddImage(new ByteArrayImageSource(hdrBytes));
+        hdrImg.Width = Unit.FromCentimeter(2.8);
+        hdrImg.LockAspectRatio = true;
+
+        var address = leftCell.AddParagraph(
+            "HDR, Inc.\r\n" +
+            "1917 S. 67th Street\r\n" +
+            "Omaha, NE 68106\r\n" +
+            "(402) 399-1000\r\n" +
+            "HDRUniversityRegistrar@hdrinc.com");
+        address.Format.Font.Size = 9;
+        address.Format.SpaceBefore = Unit.FromPoint(8);
+
+        var rightCell = row.Cells[1];
+
+        var smallTable = rightCell.Elements.AddTable();
+        smallTable.Borders.Visible = false;
+
+        smallTable.AddColumn(Unit.FromCentimeter(4.0));
+        smallTable.AddColumn(Unit.FromCentimeter(3.6));
+        smallTable.AddColumn(Unit.FromCentimeter(1.5));
+        smallTable.AddColumn(Unit.FromCentimeter(3.6));
+        smallTable.AddColumn(Unit.FromCentimeter(1.5)); 
+        smallTable.AddColumn(Unit.FromCentimeter(4.2)); 
+
+        var smallRow = smallTable.AddRow();
+
+        smallRow.Cells[0].AddParagraph();
+        smallRow.Cells[2].AddParagraph();
+        smallRow.Cells[4].AddParagraph();
+
+        var logos = new[]
         {
-            var bytes = GetImageResourceAsBytes(name);
-            builder.AddImage(bytes, width);
-            builder.AddParagraph(text);
+         (CellIndex: 1, FileName: "aia-logo.png", Width: 3.4, Text: "AIA Provider: C093"),
+         (CellIndex: 3, FileName: "cpd-logo.png", Width: 3.0, Text: "CPD Number: 15890"),
+         (CellIndex: 5, FileName: "iacet-logo.png", Width: 3.4, Text: "IACET Provider: 1001157-3")
+        };
+        foreach (var logo in logos)
+        {
+            var img = smallRow.Cells[logo.CellIndex].AddImage(new ByteArrayImageSource(GetImageResourceAsBytes(logo.FileName)));
+            img.Width = Unit.FromCentimeter(logo.Width);
+            img.LockAspectRatio = true;
+            smallRow.Cells[logo.CellIndex].AddParagraph(logo.Text).Format.Font.Size = 9;
         }
+
+        builder.CurrentSection.AddParagraph().Format.SpaceAfter = Unit.FromCentimeter(1.2);
     }
 
     private void AddTable(PdfBuilder builder, List<ReportRow> rows)
