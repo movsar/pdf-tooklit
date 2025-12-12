@@ -6,17 +6,13 @@ namespace PdfToolkit.Services
     public sealed class TableBuilder
     {
         private readonly Table _table;
-        private readonly Document _document;
 
-        internal TableBuilder(Document document, Section section, params double[] columnWidths)
+        public TableBuilder(params double[] columnWidths)
         {
-            _document = document;
-            _table = section.AddTable();
-
-            _table.Format.Alignment = ParagraphAlignment.Center;
-
+            _table = new Table();
             _table.Borders.Width = 0.25;
             _table.Borders.Color = Colors.Black;
+            _table.Format.Alignment = ParagraphAlignment.Center;
 
             foreach (var width in columnWidths)
                 _table.AddColumn(Unit.FromCentimeter(width));
@@ -39,7 +35,6 @@ namespace PdfToolkit.Services
                 paragraph.Format.Font.Size = 10;
                 cell.VerticalAlignment = VerticalAlignment.Center;
                 cell.Format.Alignment = ParagraphAlignment.Left;
-
                 cell.Borders.Width = 0.25;
                 cell.Borders.Color = Colors.Black;
             }
@@ -52,7 +47,6 @@ namespace PdfToolkit.Services
             var row = _table.AddRow();
             row.Format.Font.Size = 9;
             row.VerticalAlignment = VerticalAlignment.Center;
-            
 
             for (int i = 0; i < values.Length; i++)
             {
@@ -61,7 +55,6 @@ namespace PdfToolkit.Services
                 paragraph.Format.Font.Size = 9;
                 cell.VerticalAlignment = VerticalAlignment.Top;
                 cell.Format.Alignment = ParagraphAlignment.Left;
-
                 cell.Borders.Width = 0.25;
                 cell.Borders.Color = Colors.Black;
             }
@@ -86,6 +79,11 @@ namespace PdfToolkit.Services
             }
 
             return this;
+        }
+
+        public Table Build()
+        {
+            return _table;
         }
     }
 }
