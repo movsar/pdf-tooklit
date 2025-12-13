@@ -13,6 +13,7 @@ namespace PdfToolkit.Services
             _document = new Document();
             _currentSection = _document.AddSection();
 
+            // TODO: Make this configurable
             _currentSection.PageSetup.PageFormat = PageFormat.Letter;
             _currentSection.PageSetup.LeftMargin = Unit.FromCentimeter(1);
             _currentSection.PageSetup.PageWidth = Unit.FromInch(12);
@@ -35,11 +36,11 @@ namespace PdfToolkit.Services
             p.Format.SpaceBefore = Unit.FromCentimeter(0.2);
         }
 
+        // TODO: Refactor the next three to have a single AddParagraph with ParagraphFormat and style optional parameters
         public Paragraph AddParagraph(string text, string? style = null)
         {
             return _currentSection.AddParagraph(text, style ?? "Normal");
         }
-
         public Paragraph AddCenteredParagraph(string text, double? fontSize = null, bool bold = false)
         {
             var p = _currentSection.AddParagraph(text);
@@ -48,7 +49,6 @@ namespace PdfToolkit.Services
             p.Format.Font.Bold = bold;
             return p;
         }
-
         public Paragraph AddParagraphSized(string text, double size, bool bold = false, string? style = null)
         {
             var p = _currentSection.AddParagraph(text, style ?? "Normal");
@@ -68,15 +68,6 @@ namespace PdfToolkit.Services
         public void AddTable(Table table)
         {
             _currentSection.Add(table);
-        }
-
-        public void AddNewSection()
-        {
-            _currentSection = _document.AddSection();
-            _currentSection.PageSetup.PageFormat = PageFormat.Letter;
-            _currentSection.PageSetup.LeftMargin = Unit.FromCentimeter(1);
-            _currentSection.PageSetup.PageWidth = Unit.FromInch(12);
-            _currentSection.PageSetup.PageHeight = Unit.FromInch(9);
         }
     }
 }
