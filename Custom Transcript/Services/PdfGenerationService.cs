@@ -1,25 +1,22 @@
-﻿using CustomTranscript.App.Models;
+﻿using System.Reflection;
+using CustomTranscript.App.Models;
 using MigraDocCore.DocumentObjectModel;
 using MigraDocCore.DocumentObjectModel.Tables;
-using PdfToolkit.Interfaces;
 using PdfToolkit.Services;
-using System.Reflection;
 
 public sealed class PdfGenerationService
 {
     private const string NO_DATA = "N/A";
-    private readonly IPdfDocumentService _pdfService;
+    private readonly PdfDocumentService _pdfService;
 
-    public PdfGenerationService(IPdfDocumentService pdfService)
+    public PdfGenerationService(PdfDocumentService pdfService)
     {
         _pdfService = pdfService;
     }
 
     public MemoryStream CreatePdfReport(string userName, DateTime dateFrom, DateTime dateTo, string? employeeTimeZone, List<ReportRow> reportRows)
     {
-        var tempPath = Path.Combine(Path.GetTempPath(), $"report_{Guid.NewGuid():N}.pdf");
-
-        _pdfService.CreatePdf(tempPath, builder =>
+        var pdfBytes = _pdfService.GeneratePdf(builder =>
         {
             SetFooter(builder, employeeTimeZone);
             AddLogos(builder);
@@ -27,13 +24,6 @@ public sealed class PdfGenerationService
             AddTable(builder, reportRows);
         });
 
-        // Read the file into a byte array first
-        byte[] pdfBytes = File.ReadAllBytes(tempPath);
-
-        // Now it's safe to delete
-        File.Delete(tempPath);
-        
-        // Return as MemoryStream
         return new MemoryStream(pdfBytes);
     }
 
@@ -41,15 +31,20 @@ public sealed class PdfGenerationService
     {
         var historyParagraph = builder.AddCenteredParagraph("HDRU Professional Training History", 16, bold: true);
         historyParagraph.Format.SpaceAfter = Unit.FromCentimeter(0.3);
+
         var trainingHistoryParagraph = builder.AddParagraphSized($"Professional Training History for: {userName}", 11, bold: true);
         trainingHistoryParagraph.Format.SpaceAfter = Unit.FromCentimeter(0.2);
+
         var certificateParagraph = builder.AddParagraphSized($"Certificate of completion for {dateFrom:d} - {dateTo:d}", 11, bold: false);
         certificateParagraph.Format.SpaceAfter = Unit.FromCentimeter(0.1);
     }
 
     private void AddLogos(PdfBuilder builder)
     {
-        var logoTable = builder.CurrentSection.AddTable();
+        var document = builder.Build();
+        var currentSection = document.LastSection;
+
+        var logoTable = currentSection.AddTable();
         logoTable.Borders.Visible = false;
 
         logoTable.AddColumn(Unit.FromCentimeter(10.5));
@@ -82,8 +77,8 @@ public sealed class PdfGenerationService
         smallTable.AddColumn(Unit.FromCentimeter(3.6));
         smallTable.AddColumn(Unit.FromCentimeter(1.5));
         smallTable.AddColumn(Unit.FromCentimeter(3.6));
-        smallTable.AddColumn(Unit.FromCentimeter(1.5)); 
-        smallTable.AddColumn(Unit.FromCentimeter(4.2)); 
+        smallTable.AddColumn(Unit.FromCentimeter(1.5));
+        smallTable.AddColumn(Unit.FromCentimeter(4.2));
 
         var smallRow = smallTable.AddRow();
 
@@ -105,21 +100,21 @@ public sealed class PdfGenerationService
             smallRow.Cells[logo.CellIndex].AddParagraph(logo.Text).Format.Font.Size = 9;
         }
 
-        builder.CurrentSection.AddParagraph().Format.SpaceAfter = Unit.FromCentimeter(1.2);
+        currentSection.AddParagraph().Format.SpaceAfter = Unit.FromCentimeter(1.2);
     }
 
     private void AddTable(PdfBuilder builder, List<ReportRow> rows)
     {
-        var table = builder.AddTable(6, 3, 3, 3, 3.5, 1.8, 1.8, 1.8, 1.8, 1.8);
-
-        table.AddHeader(
+        var tableBuilder = new TableBuilder(6, 3, 3, 3, 3.5, 1.8, 1.8, 1.8, 1.8, 1.8);
+        var table = tableBuilder.AddHeader(
             "Course Name", "Date Completed", "Provider Name",
             "Delivery Type", "Author / Instructor", "CEUs",
-            "CPDs", "HSWs", "LUs", "PDHs");
+            "CPDs", "HSWs", "LUs", "PDHs")
+            .Build();
 
         foreach (var r in rows)
         {
-            table.AddRow(
+            tableBuilder.AddRow(
                 r.CourseName,
                 r.DateCompleted?.ToString("yyyy-MM-dd") ?? NO_DATA,
                 r.ProviderName,
@@ -132,7 +127,7 @@ public sealed class PdfGenerationService
                 r.PDHs.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture));
         }
 
-        table.AddMergedRow(
+        tableBuilder.AddMergedRow(
             5,
             "Total Credit Hours for this report:",
             rows.Sum(r => r.CEUs).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
@@ -141,6 +136,8 @@ public sealed class PdfGenerationService
             rows.Sum(r => r.LUs).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
             rows.Sum(r => r.PDHs).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
         );
+
+        builder.AddTable(table);
     }
 
     private void SetFooter(PdfBuilder builder, string? employeeTimeZone)
